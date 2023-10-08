@@ -21,7 +21,12 @@ public class NanoHashMap<K, V> extends AbstractMap<K,V> implements Map<K,V> {
 
     @Override
     public Set<Map.Entry<K, V>> entrySet() {
-        return null;
+        return map.entrySet();
+    }
+
+    @Override
+    public int size() {
+        return map.size();
     }
 
 }
