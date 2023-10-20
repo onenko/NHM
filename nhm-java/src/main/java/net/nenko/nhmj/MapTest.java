@@ -5,15 +5,21 @@ import net.nenko.lib.benchmark.BenchmarkedExecution;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class MapTest /*implements MeasuredExecutionStep*/ {
 
     private String[][] testData;
+    private Function<Void, Map<String, String>> testMapProducer;
     private Map<String, String> testMap;
 
-    public MapTest(Map<String, String> testMap, String[][] testData) {
-        this.testMap = testMap;
+    public MapTest(Function<Void, Map<String, String>> testMapProducer, String[][] testData) {
+        this.testMapProducer = testMapProducer;
         this.testData = testData;
+    }
+
+    public BenchmarkedExecution.BenchmarkResult benchmarkCreateTheMap() {
+        return BenchmarkedExecution.benchmarkedRun(() -> testMap = testMapProducer.apply((Void) null));
     }
 
     public BenchmarkedExecution.BenchmarkResult benchmarkFillTheMap() {

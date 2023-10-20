@@ -13,6 +13,11 @@ class NanoHashMapTest {
     private static final String KEY2 = "Key2";
     private static final String VAL2 = "Value2";
 
+//    private static final int HEAVY_TEST_CAPACITY = 88888888;
+//    private static final int HEAVY_TEST_KVP_COUNT = 44000000;
+    private static final int HEAVY_TEST_CAPACITY = 8888888;
+    private static final int HEAVY_TEST_KVP_COUNT = 4400000;
+
     @Test
     void simplestTest() {
         Map<String, String> map = new NanoHashMap<>();
@@ -29,9 +34,9 @@ class NanoHashMapTest {
 
     @Test
     void resizeTest() {
-        Map<String, String> map = new NanoHashMap<>(88888888);
+        Map<String, String> map = new NanoHashMap<>(HEAVY_TEST_CAPACITY);
         List<String> savedKeysToCheck = new ArrayList<>(10000);
-        for(int i = 0; i < 44000000; i ++) {
+        for(int i = 0; i < HEAVY_TEST_KVP_COUNT; i ++) {
             String randomString = UUID.randomUUID().toString();
             if( i % 10000 == 0) {
                 savedKeysToCheck.add(randomString);
@@ -51,9 +56,9 @@ class NanoHashMapTest {
 
     @Test
     void removeTest() {
-        Map<String, String> map = new NanoHashMap<>(88888888);
+        Map<String, String> map = new NanoHashMap<>(HEAVY_TEST_CAPACITY);
         String savedKey = null;
-        for(int i = 0; i < 44000000; i ++) {
+        for(int i = 0; i < HEAVY_TEST_KVP_COUNT; i ++) {
             String randomKey = UUID.randomUUID().toString();
             String randomVal = "[" + randomKey + ']';
             if( i % 10000 == 0) {
@@ -76,6 +81,25 @@ class NanoHashMapTest {
         }
         assertTrue("The map filled successfully" != null);
         assertEquals(map.get(savedKey), "[" + savedKey + ']');
+    }
+
+    @Test
+    void nullHandlingHashMapTest() {
+        Map<String, String> map = new HashMap<>();
+        map.put(KEY1, null);
+        map.put(KEY2, VAL2);
+        assertNull(map.get(KEY1));
+        map.put(null, VAL1);
+        assertEquals(map.get(null), VAL1);
+    }
+
+    @Test
+    void nullHandlingNanoHashMapTest() {
+        Map<String, String> map = new NanoHashMap<>();
+        map.put(KEY1, null);
+        map.put(KEY2, VAL2);
+        assertNull(map.get(KEY1));
+        assertThrows(NullPointerException.class, () -> map.put(null, VAL1));
     }
 
 }

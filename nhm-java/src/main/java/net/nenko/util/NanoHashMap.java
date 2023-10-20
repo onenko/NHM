@@ -73,7 +73,7 @@ public class NanoHashMap<K, V> extends AbstractMap<K,V> implements Map<K,V> {
         if(size + deletedSlots > threshold) {
             resize();
         }
-        int index = (key.hashCode() & 0x7FFFFFFF) % keys.length;
+        int index = slotIndex(key);
         for(int i = 0; i < keys.length; i++) {
             int slot = (index + i) % keys.length;
             if(slotIsDeleted(slot)) {
@@ -142,12 +142,6 @@ public class NanoHashMap<K, V> extends AbstractMap<K,V> implements Map<K,V> {
         return false;
     }
 
-    /**
-     * slotIsDeleted() - checks if the slot contains deleted map entry and can't be reused
-     *
-     * NOTE: to mark the slot as deleted, we use tricky approach: assign the key to
-     * predefined reference REFERENCE_OF_DELETED_SLOT
-     */
     private static final Object REFERENCE_OF_DELETED_SLOT = "REFERENCE_OF_DELETED_SLOT";
 
     private void deleteSlot(int slot) {
@@ -157,8 +151,21 @@ public class NanoHashMap<K, V> extends AbstractMap<K,V> implements Map<K,V> {
         deletedSlots++;
     }
 
+    /**
+     * slotIsDeleted() - checks if the slot contains deleted map entry and can't be reused
+     *
+     * NOTE: to mark the slot as deleted, we use tricky approach: assign the key to
+     * predefined reference REFERENCE_OF_DELETED_SLOT
+     */
     private boolean slotIsDeleted(int i) {
         return keys[i] == REFERENCE_OF_DELETED_SLOT;
+    }
+
+    private int slotIndex(Object key) {
+        if( key == null) {
+            throw new NullPointerException("NanoHashMap implementation of Map does not support 'null' key");
+        }
+        return (key.hashCode() & 0x7FFFFFFF) % keys.length;
     }
 
     /**
@@ -166,7 +173,7 @@ public class NanoHashMap<K, V> extends AbstractMap<K,V> implements Map<K,V> {
      * @return index of a slot with key 'key' in data array or -1 if the key not found
      */
     private int locateSlot(Object key) {
-        int index = (key.hashCode() & 0x7FFFFFFF) % keys.length;
+        int index = slotIndex(key);
         for(int i = 0; i < keys.length; i++) {
             int slot = (index + i) % keys.length;
             if (slotIsDeleted(slot)) {
@@ -183,7 +190,7 @@ public class NanoHashMap<K, V> extends AbstractMap<K,V> implements Map<K,V> {
     }
 
     private void resize() {
-        System.out.println("resize() starting with: " + sizesToString());
+//        System.out.println("resize() starting with: " + sizesToString());
         int capacity = calculateNewSizes();
         K[] oldKeys = keys;
         V[] oldValues = values;
@@ -195,7 +202,7 @@ public class NanoHashMap<K, V> extends AbstractMap<K,V> implements Map<K,V> {
             }
         }
 
-        System.out.println("resize() done with: " + sizesToString());
+//        System.out.println("resize() done with: " + sizesToString());
     }
 
     private void createInternalDataStructures(int capacity) {
