@@ -190,7 +190,7 @@ public class NanoHashMap<K, V> extends AbstractMap<K,V> implements Map<K,V> {
     }
 
     private void resize() {
-//        System.out.println("resize() starting with: " + sizesToString());
+        System.out.println("resize() starting with: " + sizesToString());
         int capacity = calculateNewSizes();
         K[] oldKeys = keys;
         V[] oldValues = values;
@@ -202,7 +202,7 @@ public class NanoHashMap<K, V> extends AbstractMap<K,V> implements Map<K,V> {
             }
         }
 
-//        System.out.println("resize() done with: " + sizesToString());
+        System.out.println("resize() done with: " + sizesToString());
     }
 
     private void createInternalDataStructures(int capacity) {
@@ -215,6 +215,10 @@ public class NanoHashMap<K, V> extends AbstractMap<K,V> implements Map<K,V> {
 
     private int calculateNewSizes() {
         long current = keys.length;
+        if(deletedSlots > size) {
+            // Keep sizes, but recreate the map to remove all deletedSlots
+            return (int) current;
+        }
         if(current < Integer.MAX_VALUE) {
             current = current * 2;
             current = current < Integer.MAX_VALUE ? current : Integer.MAX_VALUE;

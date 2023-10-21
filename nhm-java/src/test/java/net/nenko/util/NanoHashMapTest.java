@@ -17,6 +17,7 @@ class NanoHashMapTest {
 //    private static final int HEAVY_TEST_KVP_COUNT = 44000000;
     private static final int HEAVY_TEST_CAPACITY = 8888888;
     private static final int HEAVY_TEST_KVP_COUNT = 4400000;
+    private static final int SAVED_KEYS_LIST_SIZE = 100000;
 
     @Test
     void simplestTest() {
@@ -35,7 +36,7 @@ class NanoHashMapTest {
     @Test
     void resizeTest() {
         Map<String, String> map = new NanoHashMap<>(HEAVY_TEST_CAPACITY);
-        List<String> savedKeysToCheck = new ArrayList<>(10000);
+        List<String> savedKeysToCheck = new ArrayList<>(SAVED_KEYS_LIST_SIZE);
         for(int i = 0; i < HEAVY_TEST_KVP_COUNT; i ++) {
             String randomString = UUID.randomUUID().toString();
             if( i % 10000 == 0) {
@@ -81,6 +82,36 @@ class NanoHashMapTest {
         }
         assertTrue("The map filled successfully" != null);
         assertEquals(map.get(savedKey), "[" + savedKey + ']');
+    }
+
+    /**
+     * removeNoResizeTest() - check that a map can keep the memory footprint in some limits
+     * after huge amount remove/put operations
+     */
+    @Test
+    void removeNoResizeTest() {
+        Map<String, String> map = new NanoHashMap<>(HEAVY_TEST_CAPACITY);
+        String[] savedKeysToCheck = new String[SAVED_KEYS_LIST_SIZE];
+
+        // Add some initial values to the tested map and to saved keys array
+        for(int i = 0; i < SAVED_KEYS_LIST_SIZE; i ++) {
+            savedKeysToCheck[i] = UUID.randomUUID().toString();
+            map.put(savedKeysToCheck[i], "[" + savedKeysToCheck[i] + ']');
+        }
+
+        // Make multiple passes through saved keys and delete KVP and create new one and add to the map
+        for(int scan = 0; scan < 9999; scan ++) {
+            for(int i = 0; i < SAVED_KEYS_LIST_SIZE; i ++) {
+                // Delete KV Pair and generate and add new one
+                String key = savedKeysToCheck[i];
+                assertEquals(map.get(key), "[" + key + ']');
+                assertEquals(map.remove(key), "[" + key + ']');
+                savedKeysToCheck[i] = UUID.randomUUID().toString();
+                map.put(savedKeysToCheck[i], "[" + savedKeysToCheck[i] + ']');
+            }
+            System.out.println("The map keeps OK after the pass " + scan);
+        }
+        assertTrue("The map endured all the scans" != null);
     }
 
     @Test
