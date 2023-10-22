@@ -8,11 +8,14 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class App {
-    private static final int TEST_DATA_SIZE = 10000000;
-    private static final int MAP_DATA_SIZE = 15000000;
+    private static final int TEST_DATA_SIZE = 33000000;
+    private static final int MAP_DATA_SIZE = 45000000;
     private static String[][] testData;
 
     public static void main(String[] args) {
+
+        System.out.println("HashMap/NanoHashMap Benchmark Application v1.0\n");
+
         Boolean isNanoHashMap = null;
         if(args.length == 1) {
             if("-hm".equals(args[0]))   isNanoHashMap = false;
@@ -28,19 +31,14 @@ public class App {
         Function<Void, Map<String, String>> testMapProducer = null;
         if(isNanoHashMap) {
             testMapProducer = (_void) -> new NanoHashMap<String, String>(MAP_DATA_SIZE);
-            stepRun(testMapProducer, "with net.nenko.util.NanoHashMap");
+            benchmarkRun(testMapProducer, "with net.nenko.util.NanoHashMap");
         } else {
             testMapProducer = (_void) -> new HashMap<String, String>(MAP_DATA_SIZE);
-            stepRun(testMapProducer, "with java.util.HashMap");
+            benchmarkRun(testMapProducer, "with java.util.HashMap");
         }
-
-//        Map map = isNanoHashMap
-//                ? new NanoHashMap<String, String>(MAP_DATA_SIZE)
-//                : new HashMap<String, String>(MAP_DATA_SIZE);
-//        stepRun(testMapProducer, "with " + map.getClass().getName());
     }
 
-    private static void stepRun(Function<Void, Map<String, String>> testMapProducer, String title) {
+    private static void benchmarkRun(Function<Void, Map<String, String>> testMapProducer, String title) {
         System.out.println("*** BEGIN stepRun " + title);
 
         MapTest mapTest = new MapTest(testMapProducer, testData);

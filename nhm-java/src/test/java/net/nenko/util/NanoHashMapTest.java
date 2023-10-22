@@ -13,11 +13,14 @@ class NanoHashMapTest {
     private static final String KEY2 = "Key2";
     private static final String VAL2 = "Value2";
 
-//    private static final int HEAVY_TEST_CAPACITY = 88888888;
-//    private static final int HEAVY_TEST_KVP_COUNT = 44000000;
+/* Long running tests - good to use during development but too long for regular unit tests
+    private static final int HEAVY_TEST_CAPACITY = 88888888;
+    private static final int HEAVY_TEST_KVP_COUNT = 44000000;
+    private static final int SAVED_KEYS_LIST_SIZE = 100000;
+*/
     private static final int HEAVY_TEST_CAPACITY = 8888888;
     private static final int HEAVY_TEST_KVP_COUNT = 4400000;
-    private static final int SAVED_KEYS_LIST_SIZE = 100000;
+    private static final int SAVED_KEYS_LIST_SIZE = 10000;
 
     @Test
     void simplestTest() {
@@ -115,7 +118,7 @@ class NanoHashMapTest {
     }
 
     @Test
-    void nullHandlingHashMapTest() {
+    void nullHandling_HashMap_Test() {
         Map<String, String> map = new HashMap<>();
         map.put(KEY1, null);
         map.put(KEY2, VAL2);
@@ -124,8 +127,13 @@ class NanoHashMapTest {
         assertEquals(map.get(null), VAL1);
     }
 
+    /**
+     * nullHandling_NanoHashMap_Test() - test for null values and keys
+     *
+     * NOTE: NanoHashMap() does not support 'null' keys (in contrast to HashMap)
+     */
     @Test
-    void nullHandlingNanoHashMapTest() {
+    void nullHandling_NanoHashMap_Test() {
         Map<String, String> map = new NanoHashMap<>();
         map.put(KEY1, null);
         map.put(KEY2, VAL2);

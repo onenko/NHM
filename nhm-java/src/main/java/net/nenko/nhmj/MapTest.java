@@ -23,7 +23,6 @@ public class MapTest /*implements MeasuredExecutionStep*/ {
     }
 
     public BenchmarkedExecution.BenchmarkResult benchmarkFillTheMap() {
-//        return MeasuredExecutionStep.execute(() -> _fillTheMap());
         return BenchmarkedExecution.benchmarkedRun(() -> _fillTheMap());
     }
 

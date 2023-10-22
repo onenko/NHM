@@ -26,7 +26,7 @@ public class BenchmarkedExecution {
 
         @Override
         public String toString() {
-            return "duration " + durationNanos + " nanoseconds.," +
+            return "duration " + (long)(0.001 * durationNanos + 0.5) + " microseconds," +
                     " heap increase " + heapIncreaseBytes + " bytes.";
         }
     }
