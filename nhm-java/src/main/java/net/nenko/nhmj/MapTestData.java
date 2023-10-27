@@ -14,7 +14,7 @@ public class MapTestData {
         String[][] data = new String[2][count];
         for(int i = 0; i < count; i++) {
             data[0][i] = UUID.randomUUID().toString();
-            data[1][i] = "value-" + data[0][i] + "-value";
+            data[1][i] = "val:" + data[0][i];
         }
         return data;
     }

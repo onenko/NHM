@@ -8,32 +8,27 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class App {
-    private static final int TEST_DATA_SIZE = 33000000;
-    private static final int MAP_DATA_SIZE = 45000000;
     private static String[][] testData;
 
     public static void main(String[] args) {
 
         System.out.println("HashMap/NanoHashMap Benchmark Application v1.0\n");
 
-        Boolean isNanoHashMap = null;
-        if(args.length == 1) {
-            if("-hm".equals(args[0]))   isNanoHashMap = false;
-            if("-nhm".equals(args[0]))  isNanoHashMap = true;
-        }
-        if(isNanoHashMap == null) {
-            System.out.println("You should provide argument -hm for HashMap or -nhm for NanoHashMap to benchmark");
+        Cfg cfg = new Cfg();
+        String err = cfg.parse(args);
+        if(err != null) {
+            System.out.println("Error to parse command line: " + err);
             System.exit(-1);
         }
 
-        testData = MapTestData.getStringStringPairs(TEST_DATA_SIZE);
+        testData = MapTestData.getStringStringPairs(cfg.benchmarkDataSize());
 
         Function<Void, Map<String, String>> testMapProducer = null;
-        if(isNanoHashMap) {
-            testMapProducer = (_void) -> new NanoHashMap<String, String>(MAP_DATA_SIZE);
+        if(cfg.isNanoHashMap()) {
+            testMapProducer = (_void) -> new NanoHashMap<String, String>(cfg.benchmarkMapCapacity());
             benchmarkRun(testMapProducer, "with net.nenko.util.NanoHashMap");
         } else {
-            testMapProducer = (_void) -> new HashMap<String, String>(MAP_DATA_SIZE);
+            testMapProducer = (_void) -> new HashMap<String, String>(cfg.benchmarkMapCapacity());
             benchmarkRun(testMapProducer, "with java.util.HashMap");
         }
     }
